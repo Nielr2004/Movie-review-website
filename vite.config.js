@@ -1,3 +1,4 @@
+// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -5,8 +6,11 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.VITE_BASE_PATH || '/Movie-review-website',
-  // Optional: If you want to use absolute path imports like `import Component from 'src/components/Component'`
+  // Change this line:
+  base: '/', // This is the correct base for most Vercel deployments
+  // If you absolutely needed a subpath (very rare for Vercel SPAs),
+  // you would also need to configure BrowserRouter's basename.
+  // But for now, '/' is almost certainly correct.
   resolve: {
     alias: {
       'src': path.resolve(__dirname, './src'),
