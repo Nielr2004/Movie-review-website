@@ -1,0 +1,195 @@
+/* src/pages/DetailPage/DetailPage.module.css */
+
+.detailPage {
+  position: relative;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  color: var(--text-light); /* Light text on dark background */
+  padding-bottom: 50px; /* Space at the bottom */
+}
+
+/* Backdrop image */
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 600px; /* Adjust height as needed */
+  background-size: cover;
+  background-position: center top;
+  filter: blur(8px); /* Blur the background image */
+  transform: scale(1.05); /* Slightly scale to hide blur edges */
+  z-index: 1;
+}
+
+/* Dark overlay on backdrop for readability */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, var(--background-dark) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.9) 100%);
+  z-index: 2;
+}
+
+/* Main content wrapper to sit on top of the backdrop */
+.contentWrapper {
+  position: relative;
+  z-index: 3;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column; /* Stack on small screens */
+  align-items: center; /* Center items when stacked */
+  gap: 40px;
+}
+
+/* Poster image container */
+.posterContainer {
+  flex-shrink: 0; /* Don't shrink the poster */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.poster {
+  width: 300px; /* Fixed width for the poster */
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Info section (title, overview, etc.) */
+.info {
+  flex-grow: 1; /* Allow info to take remaining space */
+  text-align: center; /* Center text on small screens */
+}
+
+.title {
+  font-size: 3.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--text-light);
+  line-height: 1.1;
+}
+
+.tagline {
+  font-size: 1.3em;
+  color: var(--text-dark);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.meta {
+  display: flex;
+  justify-content: center; /* Center meta info */
+  gap: 25px;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+  color: var(--text-light);
+}
+
+.genres {
+  font-size: 1.1em;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+
+.overview {
+  font-size: 1.1em;
+  line-height: 1.8;
+  margin-bottom: 30px;
+  max-width: 800px; /* Limit width for readability */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.castCrew {
+  font-size: 1em;
+  color: var(--text-light);
+  margin-bottom: 30px;
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center; /* Center buttons */
+  margin-bottom: 40px;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.button:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-2px);
+}
+
+/* Similar Content Section */
+.similarContent {
+  position: relative; /* To bring it above backdrop */
+  z-index: 4;
+  max-width: 1200px;
+  margin: 40px auto; /* Adjust margin to give space */
+  padding: 0 20px;
+}
+
+.sectionTitle {
+  font-size: 2.2em;
+  color: var(--text-light);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* --- Media Queries for Responsiveness --- */
+@media (min-width: 768px) {
+  .contentWrapper {
+    flex-direction: row; /* Row on larger screens */
+    align-items: flex-start; /* Align poster and info to top */
+    text-align: left; /* Align text to left */
+  }
+
+  .info {
+    text-align: left; /* Align text to left on larger screens */
+  }
+
+  .meta {
+    justify-content: flex-start; /* Align meta info to left */
+  }
+
+  .overview {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .buttons {
+    justify-content: flex-start; /* Align buttons to left */
+  }
+
+  .title {
+    font-size: 4em; /* Larger title on bigger screens */
+  }
+}
+
+@media (min-width: 1024px) {
+  .detailPage {
+    padding-bottom: 80px;
+  }
+  .contentWrapper {
+    padding: 60px 20px;
+    gap: 60px;
+  }
+  .poster {
+    width: 350px;
+  }
+}

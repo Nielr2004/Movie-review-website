@@ -1,112 +1,303 @@
 /* src/pages/Home.module.css */
 
-/* Add these styles to your existing Home.module.css */
+/* --- General Container Adjustments --- */
+.homeContainer {
+  padding: 20px;
+  max-width: 1100px; /* Reduced for a more contained layout */
+  margin: 0 auto; /* Centers the container */
+}
 
+/* --- Search Bar & Button UI Improvements --- */
 .searchBarContainer {
-  position: relative; /* Important for positioning the suggestions list */
-  margin-bottom: 20px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 600px; /* Adjust as needed */
+  gap: 10px;
+  margin-bottom: 30px;
+  position: relative;
+  max-width: 600px; /* Limits the overall width of the search bar */
   margin-left: auto;
   margin-right: auto;
+  align-items: center; /* Ensures vertical alignment of input and button */
 }
 
 .searchInput {
-  padding: 12px 15px;
-  border: 1px solid #333;
+  flex: 3; /* NEW: Makes the input 3 times wider than the button (proportionally) */
+  padding: 12px 18px;
+  border: 1px solid var(--text-dark); /* Keeps the 1px border for consistent height */
   border-radius: 25px;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  font-size: 1em;
-  flex-grow: 1; /* Allows input to take available space */
-  margin-right: 10px; /* Space between input and button */
-  outline: none; /* Remove default focus outline */
+  background-color: var(--background-dark-light, #282828); /* Fallback if var not defined */
+  color: var(--text-light);
+  font-size: 1.05em;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .searchInput:focus {
-  border-color: var(--primary-color); /* Highlight border on focus */
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3); /* Soft glow */
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .searchButton {
+  flex: 1; /* NEW: Makes the button 1 part of the proportion (relatively narrower) */
   padding: 12px 25px;
-  background-color: var(--primary-color); /* Your main accent color */
+  background-color: var(--primary-color);
   color: white;
-  border: none;
+  border: 1px solid transparent; /* Crucial for alignment: matches input's border width */
   border-radius: 25px;
   cursor: pointer;
   font-size: 1em;
-  font-weight: bold;
-  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle initial shadow */
+  /* margin-bottom: 14px; Removed to ensure perfect vertical alignment */
 }
 
-.searchButton:hover:not(:disabled) {
-  background-color: var(--primary-color-dark); /* Darker shade on hover */
+.searchButton:hover {
+  background-color: var(--primary-color-dark);
   transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
 }
 
-.searchButton:disabled {
-  background-color: #555;
-  cursor: not-allowed;
+.searchButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Reduced shadow on click */
 }
 
-/* Styles for Suggestions List */
+/* --- Search Suggestions List --- */
 .suggestionsList {
   position: absolute;
-  top: 100%; /* Position right below the search bar */
+  top: 100%; /* Position below the search input */
   left: 0;
   right: 0;
-  background-color: #1a1a1a; /* Dark background for suggestions */
-  border: 1px solid #333;
-  border-top: none; /* No top border, blends with search input */
-  border-radius: 0 0 8px 8px; /* Rounded bottom corners */
-  list-style: none; /* Remove bullet points */
+  background-color: var(--background-dark);
+  border: 1px solid var(--text-dark);
+  border-radius: 5px;
+  list-style: none;
   padding: 0;
-  margin: 0;
+  margin-top: 5px; /* Small gap between input and suggestions */
+  z-index: 10; /* Ensure it appears above other content */
   max-height: 250px; /* Limit height and make scrollable */
   overflow-y: auto;
-  z-index: 10; /* Ensure it appears above other content */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
 .suggestionItem {
-  padding: 12px 15px;
+  padding: 10px 15px;
+  color: var(--text-light);
   cursor: pointer;
-  color: #e0e0e0;
-  border-bottom: 1px solid #222; /* Separator between suggestions */
-  transition: background-color 0.2s ease-in-out;
-}
-
-.suggestionItem:last-child {
-  border-bottom: none; /* No border for the last item */
+  transition: background-color 0.2s ease;
 }
 
 .suggestionItem:hover {
-  background-color: #333; /* Highlight on hover */
+  background-color: var(--background-dark-light); /* Lighter dark background on hover */
 }
 
-/* General layout adjustments for Home */
-.homeContainer {
+/* --- Filters Container --- */
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap; /* Allow filters to wrap to the next line on smaller screens */
+  gap: 15px; /* Spacing between filter groups */
+  justify-content: center; /* Center filters */
+  align-items: flex-end; /* Align items to the bottom (labels might be taller) */
+  margin-bottom: 30px; /* Space below filters */
+  background-color: rgba(var(--background-dark-rgb), 0.5); /* Semi-transparent background */
   padding: 20px;
-  max-width: 1400px; /* Adjust max width for the whole page content */
-  margin: 0 auto;
-  min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 60px)); /* Example: Adjust based on your header/footer height */
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  max-width: 1200px; /* Constrain width */
+  margin-left: auto; /* Center the container */
+  margin-right: auto; /* Center the container */
 }
 
+.filterGroup {
+  display: flex;
+  flex-direction: column; /* Stack label and select vertically */
+  gap: 8px; /* Space between label and select */
+  flex-grow: 1; /* Allow groups to grow */
+  min-width: 150px; /* Minimum width for each filter dropdown */
+  max-width: 200px; /* Max width to prevent too wide dropdowns */
+}
+
+.filterGroup label {
+  color: var(--text-light);
+  font-size: 0.9em;
+  font-weight: 600;
+  white-space: nowrap; /* Prevent label wrapping */
+}
+
+.filterSelect {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid var(--text-dark); /* Subtle border */
+  border-radius: 5px;
+  background-color: var(--background-dark); /* Dark background for the select */
+  color: var(--text-light); /* Light text color */
+  font-size: 1em;
+  -moz-appearance: none; /* Remove default browser arrow */
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23F5F5F1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom SVG arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filterSelect:hover {
+  border-color: var(--primary-color);
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
+}
+
+/* Style for options within the select (might need browser-specific styling for full control) */
+.filterSelect option {
+  background-color: var(--background-dark);
+  color: var(--text-light);
+}
+
+/* Clear Filters Button */
+.clearFiltersButton {
+  padding: 10px 20px;
+  background-color: var(--primary-color); /* Use your accent color */
+  color: white;
+  border: none; /* Keep border: none; as it aligns visually with the filter dropdowns */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap; /* Prevent button text from wrapping */
+  align-self: flex-end; /* Align to the bottom like filter selects */
+}
+
+.clearFiltersButton:hover {
+  background-color: var(--primary-color-dark); /* A slightly darker shade for hover */
+  transform: translateY(-1px);
+}
+
+.clearFiltersButton:active {
+  transform: translateY(0);
+}
+
+/* --- General Content Section Titles --- */
 .sectionTitle {
-  color: #e0e0e0;
-  font-size: 2em;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  color: var(--text-light);
+  font-size: 1.8em;
+  margin: 40px 0 20px;
   text-align: center;
+  font-weight: 700;
 }
 
-.loadingMessage, .noResults {
-  color: #e0e0e0;
+/* --- Loading and No Results Messages --- */
+.loadingMessage, .noResults, .error {
+  color: var(--text-light);
   text-align: center;
+  margin: 50px 0;
   font-size: 1.2em;
-  padding: 20px;
+}
+
+.error {
+  color: var(--error-color, #dc3545); /* Fallback to a red color if not defined */
+}
+
+/* --- Home Page Specific Sections --- */
+.homePageSections {
+  background-color: var(--background-dark-light); /* A slightly lighter dark for contrast */
+  border-radius: 10px;
+  padding: 30px; /* Add padding to separate content from the background edges */
+  margin-top: 40px; /* Space it out from the search bar/filters above */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Load More Trigger and Button --- */
+.loadMoreTrigger {
+  /* This element is used by the Intersection Observer to trigger loading */
+  height: 50px; /* Give it some height for the observer to detect */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px; /* Spacing from the content above */
+  margin-bottom: 60px; /* Spacing before the actual footer */
+}
+
+.loadMoreButton {
+  /* Styles for the button itself (if you choose to use a manual button) */
+  padding: 15px 35px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px; /* Slightly less rounded than search button for a distinct feel */
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.loadMoreButton:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.loadMoreButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Message when no more content is available */
+.noMoreResults {
+  color: var(--text-light);
+  text-align: center;
+  margin: 20px 0 50px 0; /* Adjust margin for visibility above footer */
+  font-size: 1.1em;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  /* Search Bar adjustments */
+  .searchBarContainer {
+    flex-direction: column; /* Stack input and button vertically */
+    align-items: stretch; /* Stretch items to full width */
+    gap: 15px; /* Increase gap between stacked items */
+  }
+
+  .searchInput, .searchButton {
+    /* When stacked, they should still take 100% width */
+    width: 100%; /* Make them take full width */
+    border-radius: 10px; /* Adjust radius for stacked appearance */
+    flex: none; /* Reset flex for stacked layout */
+  }
+
+  /* Filters adjustments */
+  .filtersContainer {
+    flex-direction: column; /* Stack filters vertically on small screens */
+    align-items: stretch; /* Stretch filters to full width */
+    padding: 15px;
+  }
+
+  .filterGroup {
+    max-width: 100%; /* Allow filters to take full width */
+  }
+
+  .filterSelect {
+    font-size: 0.95em;
+    padding: 12px 15px;
+  }
+}
+
+/* Add any other specific media queries as needed for smaller devices */
+@media (max-width: 480px) {
+  .homeContainer {
+    padding: 15px;
+  }
+
+  .sectionTitle {
+    font-size: 1.5em;
+  }
 }

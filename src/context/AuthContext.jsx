@@ -1,100 +1,64 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebaseConfig.js'; // Import your Firebase auth instance
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from 'firebase/auth';
+// src/context/AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export const AuthContext = createContext();
+// 1. Create the Auth Context
+const AuthContext = createContext(null);
 
+// 2. Create the Auth Provider Component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  // In a real application, you'd check localStorage for a token
+  // or make an API call to verify the user's session here.
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [user, setUser] = useState(null); // Could store user object (e.g., { username: '...' })
 
-  // Listen for Firebase auth state changes
+  // Example: Check for a "token" in localStorage on initial load
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    const storedToken = localStorage.getItem('userToken');
+    if (storedToken) {
+      // In a real app, validate this token with your backend
+      // For now, we'll just assume presence of token means logged in
+      setIsLoggedIn(true);
+      // You might also fetch user details here
+      setUser({ username: 'CurrentUser' }); // Placeholder user
+    }
   }, []);
 
-  const login = async (email, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // setUser is updated by onAuthStateChanged listener
-      alert('Logged in successfully!');
-      navigate('/dashboard');
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.message || "Failed to log in.");
-    } finally {
-      setLoading(false);
-    }
+  const login = (userData, token) => {
+    setIsLoggedIn(true);
+    setUser(userData);
+    // Store token/user data in localStorage or sessionStorage for persistence
+    localStorage.setItem('userToken', token);
+    console.log("User logged in:", userData);
   };
 
-  const signup = async (email, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // setUser is updated by onAuthStateChanged listener
-      alert('Signed up successfully!');
-      navigate('/dashboard');
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError(err.message || "Failed to sign up.");
-    } finally {
-      setLoading(false);
-    }
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    // Clear any stored authentication data
+    localStorage.removeItem('userToken');
+    console.log("User logged out.");
   };
 
-  const logout = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await signOut(auth);
-      // setUser is updated by onAuthStateChanged listener to null
-      alert('Logged out!');
-      navigate('/');
-    } catch (err) {
-      console.error("Logout error:", err);
-      setError(err.message || "Failed to log out.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const value = {
+  const authValue = {
+    isLoggedIn,
     user,
-    loading,
-    error,
     login,
-    signup,
     logout,
   };
 
-  // Show a global spinner while auth state is being determined
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--background-dark)' }}>
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+// 3. Create the useAuth Custom Hook
+// This hook makes it easy for any component to access the auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

@@ -45,7 +45,7 @@ export const getMovieDetails = async (id) => {
   return fetchTmdb(`/movie/${id}`, { append_to_response: 'videos,credits,reviews,similar' });
 };
 
-// NEW: Get Movie Genres
+// Get Movie Genres
 export const getMovieGenres = async () => {
   const data = await fetchTmdb('/genre/movie/list');
   return data.genres; // TMDB returns { genres: [...] }
@@ -69,32 +69,35 @@ export const getSeriesDetails = async (id) => {
   return fetchTmdb(`/tv/${id}`, { append_to_response: 'videos,credits,reviews,similar' });
 };
 
-// NEW: Get TV Series Genres
+// Get TV Series Genres
 export const getSeriesGenres = async () => {
   const data = await fetchTmdb('/genre/tv/list');
   return data.genres; // TMDB returns { genres: [...] }
 };
 
-// NEW: Discover Movies (will be used for filtering)
+// NEW: Discover Movies (now includes original language filter)
 export const discoverMovies = async (filters = {}, page = 1) => {
   const params = {
     page: page,
-    with_genres: filters.genreId, // TMDB expects comma-separated IDs
-    'primary_release_year': filters.year, // For movies
-    'vote_average.gte': filters.minRating, // Min rating
-    sort_by: filters.sortBy || 'popularity.desc' // Default sort
+    with_genres: filters.genreId,
+    'primary_release_year': filters.year,
+    'vote_average.gte': filters.minRating,
+    sort_by: filters.sortBy || 'popularity.desc',
+    with_original_language: filters.with_original_language // ADDED THIS LINE
   };
   return fetchTmdb(`/discover/movie`, params);
 };
 
-// NEW: Discover TV Series (will be used for filtering)
+// NEW: Discover TV Series (now includes original language filter)
 export const discoverSeries = async (filters = {}, page = 1) => {
   const params = {
     page: page,
-    with_genres: filters.genreId, // TMDB expects comma-separated IDs
-    'first_air_date_year': filters.year, // For TV series
-    'vote_average.gte': filters.minRating, // Min rating
-    sort_by: filters.sortBy || 'popularity.desc' // Default sort
+    page: page,
+    with_genres: filters.genreId,
+    'first_air_date_year': filters.year,
+    'vote_average.gte': filters.minRating,
+    sort_by: filters.sortBy || 'popularity.desc',
+    with_original_language: filters.with_original_language // ADDED THIS LINE
   };
   return fetchTmdb(`/discover/tv`, params);
 };

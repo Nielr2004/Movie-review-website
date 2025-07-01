@@ -1,34 +1,29 @@
 import React from 'react';
-// Import your TMDb logo. Adjust the path based on where you saved it.
-// For example, if you saved it in src/assets/images/tmdb_logo.svg
 import tmdbLogo from '../../assets/images/tmdb_logo.svg'; 
-// If you saved it as a PNG: import tmdbLogo from '../../assets/images/tmdb_logo.png';
-
-import './Footer.module.css'; // Import the CSS Module for styling
+// Import CSS Module as 'styles' (or any other name, 'styles' is common)
+import styles from './Footer.module.css'; // CHANGED: Added 'styles' alias
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear(); // Dynamically get the current year
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        {/* TMDb Attribution Text */}
-        <p className="attribution-text">
+    // Use 'styles.className' for all classNames from the CSS Module
+    <footer className={styles.footer}>
+      <div className={styles['footer-content']}> {/* Use bracket notation for hyphenated class names */}
+        <p className={styles['attribution-text']}>
           This product uses the TMDb API but is not endorsed or certified by TMDb.
         </p>
         
-        {/* TMDb Logo */}
         <a
-          href="https://www.themoviedb.org/" // Link to TMDb website
-          target="_blank"                  // Open in a new tab
-          rel="noopener noreferrer"        // Security best practice for target="_blank"
-          aria-label="The Movie Database (TMDb)" // Accessibility label
+          href="https://www.themoviedb.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="The Movie Database (TMDb)"
         >
-          <img src={tmdbLogo} alt="The Movie Database (TMDb) Logo" className="tmdb-logo" />
+          <img src={tmdbLogo} alt="The Movie Database (TMDb) Logo" className={styles['tmdb-logo']} />
         </a>
         
-        {/* Your Website's Copyright */}
-        <p className="copyright-text">
+        <p className={styles['copyright-text']}>
           &copy; {currentYear} Your Movie Website Name. All rights reserved.
         </p>
       </div>
