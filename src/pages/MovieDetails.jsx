@@ -15,7 +15,7 @@ const MovieDetails = () => {
     const fetchDetails = async () => {
       try {
         setLoading(true);
-        const data = await getMovieDetails(id);
+        const data = await fetchMovieDetails(id);
         setMovie(data);
       } catch (err) {
         console.error("Failed to fetch movie details:", err);
