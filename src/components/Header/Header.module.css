@@ -1,12 +1,14 @@
+/* src/components/Header/Header.module.css */
+
 .nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--secondary-color);
+    background-color: var(--secondary-color); /* Keeping your variable */
     padding: 0 20px;
-    height: var(--header-height);
+    height: var(--header-height); /* Keeping your variable */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    position: fixed;
+    position: fixed; /* Keeping your fixed position */
     width: 100%;
     top: 0;
     left: 0;
@@ -21,9 +23,10 @@
 .logoLink {
     display: flex;
     align-items: center;
-    color: var(--text-light);
+    color: var(--text-light); /* Keeping your variable */
     font-weight: bold;
     font-size: 1.2em;
+    text-decoration: none; /* Ensure no underline */
 }
 
 .navLogo {
@@ -35,7 +38,7 @@
 .siteName {
     margin-left: 5px;
     font-size: 1.2em;
-    color: var(--text-light);
+    color: var(--text-light); /* Keeping your variable */
 }
 
 .navList {
@@ -46,17 +49,40 @@
 }
 
 .navList li {
-    margin-left: 25px;
+    margin-left: 25px; /* Space between list items */
 }
 
 .navItem {
-    color: var(--text-light);
+    color: var(--text-light); /* Default link color */
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
+    padding: 5px 0; /* Add padding for a clickable area */
+    position: relative; /* Needed for the ::after pseudo-element */
 }
 
 .navItem:hover {
-    color: var(--primary-color);
-    text-decoration: none;
+    color: var(--primary-color); /* Highlight on hover */
+    /* text-decoration: none; // Already set above, no need to repeat */
+}
+
+/* --- NEW: Styles for the active navigation item --- */
+.activeNavItem {
+    color: var(--primary-color); /* Use your primary accent color for the active link */
+    font-weight: bold; /* Make active link bold */
+    text-decoration: none; /* Ensure no underline */
+    padding: 5px 0; /* Consistent padding */
+    position: relative; /* Needed for the ::after pseudo-element */
+}
+
+/* Optional: Add an underline or indicator for the active link */
+.activeNavItem::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; /* Position below the text */
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color); /* Underline in primary color */
+    border-radius: 2px;
 }

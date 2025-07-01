@@ -1,5 +1,6 @@
+// src/components/Header.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom'; // Import NavLink
 import styles from './Header.module.css';
 
 // Import your logo image.
@@ -16,11 +17,17 @@ const Header = () => {
       </div>
 
       <ul className={styles.navList}>
-        <li><Link to="/" className={styles.navItem}>Home</Link></li>
-        {/* Removed About, Projects, Skills, Contact links as per your request */}
-        <li><Link to="/dashboard" className={styles.navItem}>Dashboard</Link></li>
-        <li><Link to="/login" className={styles.navItem}>Login</Link></li>
-        <li><Link to="/signup" className={styles.navItem}>Sign Up</Link></li>
+        {/* Using NavLink for active styling */}
+        <li><NavLink to="/" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Home</NavLink></li>
+        
+        {/* NEW: Movies and Series buttons as requested */}
+        <li><NavLink to="/movies" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Movies</NavLink></li>
+        <li><NavLink to="/series" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Series</NavLink></li>
+        
+        {/* Existing new links for future authentication features */}
+        <li><NavLink to="/dashboard" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Dashboard</NavLink></li>
+        <li><NavLink to="/login" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Login</NavLink></li>
+        <li><NavLink to="/signup" className={({ isActive }) => isActive ? styles.activeNavItem : styles.navItem}>Sign Up</NavLink></li>
       </ul>
     </nav>
   );

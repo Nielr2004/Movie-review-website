@@ -1,68 +1,155 @@
-import React, { useEffect, useState } from 'react';
-// Corrected paths for movieApi.js and MovieList.jsx
-import { getPopularMovies, searchMovies } from '../services/movieApi.js';
+// src/pages/Home.jsx
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom'; // Import useLocation
+import {
+  getPopularMovies,
+  searchMovies,
+  getPopularSeries, // NEW
+  searchSeries      // NEW
+} from '../services/movieApi.js';
 import MovieList from '../components/MovieList/MovieList.jsx';
-import styles from './Home.module.css'; // Assuming you have a Home.module.css for styling
+import styles from './Home.module.css';
 
 const Home = () => {
-  const [movies, setMovies] = useState([]);
+  const [content, setContent] = useState([]); // Renamed from 'movies' to 'content' for generality
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // State for search input
-  const [searchResults, setSearchResults] = useState([]); // State for search results
-  const [searching, setSearching] = useState(false); // State to indicate if a search is active
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
-  // Effect to fetch popular movies on initial load
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceTimeoutRef = useRef(null);
+
+  const location = useLocation(); // Get the current location object
+  const isSeriesPage = location.pathname === '/series'; // Check if it's the /series path
+  const contentType = isSeriesPage ? 'series' : 'movie'; // Determine current content type
+
+  // Helper to adapt series data to 'movie' structure for MovieList component
+  const adaptContentForDisplay = (items) => {
+    return items.map(item => ({
+      ...item,
+      title: item.title || item.name, // Use 'title' for movies, 'name' for series
+      release_date: item.release_date || item.first_air_date // Use correct date field
+      // Add other common fields if needed, e.g., vote_average, overview
+    }));
+  };
+
+  // Effect to fetch popular movies/series on initial load or path change
   useEffect(() => {
-    // Renamed the internal function to avoid conflict with the imported getPopularMovies
-    const fetchInitialPopularMovies = async () => {
+    const fetchInitialContent = async () => {
       try {
         setLoading(true);
-        // Call the IMPORTED getPopularMovies here
-        const data = await getPopularMovies(); 
-        setMovies(data.results || data); // Adjust based on whether data.results is consistently returned
+        setError(null);
+        let data;
+        if (contentType === 'series') {
+          data = await getPopularSeries();
+        } else {
+          data = await getPopularMovies();
+        }
+        setContent(adaptContentForDisplay(data.results || []));
       } catch (err) {
-        setError("Failed to fetch popular movies. Please try again later.");
-        console.error("Error fetching popular movies:", err);
+        setError(`Failed to fetch popular ${contentType}s. Please try again later.`);
+        console.error(`Error fetching popular ${contentType}s:`, err);
       } finally {
         setLoading(false);
       }
     };
-    fetchInitialPopularMovies(); // Call the internally defined function
-  }, []); // Empty dependency array means this runs once on mount
+    // Reset search term and results when navigating between movies/series
+    setSearchTerm('');
+    setSearchResults([]);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    fetchInitialContent();
+  }, [contentType]); // Rerun when contentType changes (i.e., path changes between /movies and /series)
 
-  // Function to handle movie search
+
+  // Effect for fetching search suggestions with debouncing
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    if (searchTerm.trim() !== '') {
+      debounceTimeoutRef.current = setTimeout(async () => {
+        try {
+          let data;
+          if (contentType === 'series') {
+            data = await searchSeries(searchTerm);
+          } else {
+            data = await searchMovies(searchTerm);
+          }
+          setSuggestions(adaptContentForDisplay(data.results ? data.results.slice(0, 10) : []));
+          setShowSuggestions(true);
+        } catch (err) {
+          console.error(`Error fetching ${contentType} search suggestions:`, err);
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      }, 300);
+
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchTerm, contentType]); // Also rerun if content type changes
+
+  // Function to handle the main content search
   const handleSearch = async () => {
     if (searchTerm.trim() === '') {
-      setSearchResults([]); // Clear results if search term is empty
-      setSearching(false); // No longer searching
-      return; // Do nothing if search term is empty
+      setSearchResults([]);
+      setSearching(false);
+      setShowSuggestions(false);
+      return;
     }
 
     try {
-      setSearching(true); // Indicate that a search is active
-      setError(null); // Clear previous errors
-      const data = await searchMovies(searchTerm);
-      setSearchResults(data.results || data); // Adjust based on whether data.results is consistently returned
+      setSearching(true);
+      setError(null);
+      let data;
+      if (contentType === 'series') {
+        data = await searchSeries(searchTerm);
+      } else {
+        data = await searchMovies(searchTerm);
+      }
+      setSearchResults(adaptContentForDisplay(data.results || []));
+      setShowSuggestions(false);
     } catch (err) {
-      setError("Failed to search for movies. Please check your network or try a different term.");
-      console.error("Error searching movies:", err);
-      setSearchResults([]); // Clear results on error
+      setError(`Failed to search for ${contentType}s. Please check your network or try a different term.`);
+      console.error(`Error searching ${contentType}s:`, err);
+      setSearchResults([]);
     } finally {
-      // Small delay to ensure loading state is visible for quick searches
-      setTimeout(() => setSearching(false), 500); 
+      setTimeout(() => setSearching(false), 500);
     }
   };
 
-  // Decide which movies to display
-  const displayMovies = searchTerm.trim() !== '' ? searchResults : movies;
-  const displayTitle = searchTerm.trim() !== '' ? `Search Results for "${searchTerm}"` : 'Popular Movies';
+  // Handle clicking on a suggestion
+  const handleSuggestionClick = (movieTitle) => { // Still named movieTitle, but it's content title now
+    setSearchTerm(movieTitle);
+    setSearchResults([]);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    handleSearch(); // Auto-search on click
+  };
 
-  if (loading && !searching) { // Only show loading for initial popular movies if not searching
-    return <div className={styles.container}>Loading popular movies...</div>;
+  // Decide which content to display: search results if active, else popular content
+  const displayContent = searchTerm.trim() !== '' ? searchResults : content;
+  const displayTitle = searchTerm.trim() !== ''
+    ? `Search Results for "${searchTerm}" in ${contentType === 'movie' ? 'Movies' : 'TV Series'}`
+    : `Popular ${contentType === 'movie' ? 'Movies' : 'TV Series'}`;
+
+  if (loading && !searching && searchTerm.trim() === '') {
+    return <div className={styles.container}>Loading popular {contentType}s...</div>;
   }
 
-  if (error && !searching && displayMovies.length === 0) { // Show error only if not actively searching and no movies
+  if (error && !searching && displayContent.length === 0) {
     return <div className={styles.container} style={{ color: 'red' }}>{error}</div>;
   }
 
@@ -71,29 +158,56 @@ const Home = () => {
       <div className={styles.searchBarContainer}>
         <input
           type="text"
-          placeholder="Search for movies..."
+          placeholder={`Search for ${contentType === 'movie' ? 'movies' : 'TV series'}...`}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={(e) => { // Optional: Search on Enter key press
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+          onKeyPress={(e) => {
             if (e.key === 'Enter') {
               handleSearch();
             }
+          }}
+          onFocus={() => {
+            if (searchTerm.trim() !== '' && suggestions.length > 0) {
+                setShowSuggestions(true);
+            }
+          }}
+          onBlur={() => {
+            setTimeout(() => setShowSuggestions(false), 100);
           }}
           className={styles.searchInput}
         />
         <button onClick={handleSearch} className={styles.searchButton} disabled={searching}>
           {searching ? 'Searching...' : 'Search'}
         </button>
+
+        {/* Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className={styles.suggestionsList}>
+            {suggestions.map((item) => ( // Changed 'movie' to 'item' for generality
+              <li
+                key={item.id}
+                onClick={() => handleSuggestionClick(item.title)} // Use item.title (after adaptation)
+                className={styles.suggestionItem}
+              >
+                {item.title}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <h2 className={styles.sectionTitle}>{displayTitle}</h2>
 
-      {searching && searchTerm.trim() !== '' && searchResults.length === 0 ? ( // Display searching message only if search results are empty
+      {searching && searchTerm.trim() !== '' && searchResults.length === 0 ? (
         <div className={styles.loadingMessage}>Searching...</div>
-      ) : displayMovies.length > 0 ? (
-        <MovieList movies={displayMovies} />
+      ) : displayContent.length > 0 ? (
+        <MovieList movies={displayContent} /> 
       ) : (
-        <div className={styles.noResults}>No movies found. Try a different search term or check popular movies.</div>
+        <div className={styles.noResults}>
+          No {contentType === 'movie' ? 'movies' : 'TV series'} found. Try a different search term or check popular {contentType === 'movie' ? 'movies' : 'TV series'}.
+        </div>
       )}
     </div>
   );

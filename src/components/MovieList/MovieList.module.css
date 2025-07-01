@@ -1,0 +1,75 @@
+/* src/components/MovieList/MovieList.module.css */
+
+.movieGrid {
+  display: grid;
+  /* FOR TESTING: Explicitly set to 4 columns to confirm grid is working */
+  grid-template-columns: repeat(4, 1fr); 
+  
+  gap: 20px; /* Space between movies */
+  padding: 20px; /* Padding around the grid */
+  justify-items: center; /* Center individual movie cards within their grid cells */
+  
+  width: 100%; /* Ensure it takes full width of its parent */
+  max-width: 1200px; /* Optional: A max-width for the whole grid container */
+  margin: 0 auto; /* Optional: Center the grid container itself */
+  
+  /* TEMPORARY: This will give a light green background to the entire grid area */
+  background-color: rgba(0, 255, 0, 0.1); 
+  border: 1px dashed rgba(255, 255, 255, 0.3); /* TEMPORARY: Outline the grid area */
+}
+
+/* Media queries for responsiveness - adjust after basic grid is confirmed */
+@media (max-width: 900px) { /* Adjust for smaller screens (e.g., 3 columns) */
+  .movieGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 600px) { /* Adjust for very small screens (e.g., 2 columns) */
+  .movieGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+
+/* Styles for individual movie items within the grid */
+.movieItem {
+  background-color: #2a2a2a; /* Darker background for the card */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Slightly more pronounced shadow */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  width: 100%; /* Ensure item fills its grid cell */
+  max-width: 250px; /* Max width for individual movie cards */
+  text-align: center;
+  padding-bottom: 10px; /* Space for text below image */
+  text-decoration: none; /* Remove underline from Link */
+  color: #e0e0e0; /* Light text color for card content */
+  display: flex; /* Make it a flex container */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center items horizontally within the card */
+}
+
+.movieItem:hover {
+  transform: translateY(-8px); /* Lift effect on hover */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
+}
+
+.moviePoster {
+  width: 100%;
+  height: 350px; /* Fixed height for posters - adjust as needed */
+  object-fit: cover; /* Ensures image covers the area, cropping if necessary */
+  display: block; /* Removes extra space below image */
+}
+
+.movieTitle {
+  font-size: 1.2em; /* Slightly larger title */
+  font-weight: bold; /* Make title bold */
+  margin: 10px 8px 5px; /* Adjust margins */
+  color: #ffffff; /* White text color for title */
+  white-space: nowrap; /* Prevent title from wrapping */
+  overflow: hidden; /* Hide overflowed text */
+  text-overflow: ellipsis; /* Add "..." if title is too long */
+}

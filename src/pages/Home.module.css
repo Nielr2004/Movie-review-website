@@ -1,69 +1,112 @@
-.homeContainer {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* src/pages/Home.module.css */
+
+/* Add these styles to your existing Home.module.css */
 
 .searchBarContainer {
+  position: relative; /* Important for positioning the suggestions list */
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
-  gap: 10px; /* Space between input and button */
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Adjust as needed */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .searchInput {
-  padding: 10px 15px;
-  width: 70%;
-  max-width: 500px;
-  border: 1px solid #ddd;
+  padding: 12px 15px;
+  border: 1px solid #333;
   border-radius: 25px;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  background-color: var(--secondary-color); /* Added for consistency */
-  color: var(--text-light); /* Added for consistency */
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-size: 1em;
+  flex-grow: 1; /* Allows input to take available space */
+  margin-right: 10px; /* Space between input and button */
+  outline: none; /* Remove default focus outline */
 }
 
 .searchInput:focus {
-  outline: none;
-  border-color: var(--primary-color); /* Changed to your primary color */
-  box-shadow: 0 0 8px rgba(229, 9, 20, 0.4); /* Changed to your primary color */
+  border-color: var(--primary-color); /* Highlight border on focus */
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3); /* Soft glow */
 }
 
 .searchButton {
-  padding: 10px 20px;
-  background-color: var(--primary-color); /* Changed to your primary color */
-  color: var(--text-light); /* Changed for consistency */
+  padding: 12px 25px;
+  background-color: var(--primary-color); /* Your main accent color */
+  color: white;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold; /* Added for consistency */
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .searchButton:hover:not(:disabled) {
-  background-color: #f40612; /* Slightly darker red for hover */
+  background-color: var(--primary-color-dark); /* Darker shade on hover */
   transform: translateY(-1px);
 }
 
 .searchButton:disabled {
-  background-color: #666; /* Disabled color */
+  background-color: #555;
   cursor: not-allowed;
-  opacity: 0.7;
+}
+
+/* Styles for Suggestions List */
+.suggestionsList {
+  position: absolute;
+  top: 100%; /* Position right below the search bar */
+  left: 0;
+  right: 0;
+  background-color: #1a1a1a; /* Dark background for suggestions */
+  border: 1px solid #333;
+  border-top: none; /* No top border, blends with search input */
+  border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+  max-height: 250px; /* Limit height and make scrollable */
+  overflow-y: auto;
+  z-index: 10; /* Ensure it appears above other content */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.suggestionItem {
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #e0e0e0;
+  border-bottom: 1px solid #222; /* Separator between suggestions */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.suggestionItem:last-child {
+  border-bottom: none; /* No border for the last item */
+}
+
+.suggestionItem:hover {
+  background-color: #333; /* Highlight on hover */
+}
+
+/* General layout adjustments for Home */
+.homeContainer {
+  padding: 20px;
+  max-width: 1400px; /* Adjust max width for the whole page content */
+  margin: 0 auto;
+  min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 60px)); /* Example: Adjust based on your header/footer height */
 }
 
 .sectionTitle {
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--text-light); /* Changed for consistency */
+  color: #e0e0e0;
   font-size: 2em;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.loadingMessage,
-.noResults {
+.loadingMessage, .noResults {
+  color: #e0e0e0;
   text-align: center;
-  margin-top: 50px;
   font-size: 1.2em;
-  color: var(--text-dark); /* Changed for consistency */
+  padding: 20px;
 }
