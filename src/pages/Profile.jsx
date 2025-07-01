@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { motion } from 'framer-motion';
-import Button from '../components/UI/Button'; // Assuming you want a button here
+import Button from '../components/UI/Button.jsx'; // Assuming you want a button here
 import './PageStyles.css';
 
 const Profile = () => {

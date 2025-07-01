@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebaseConfig'; // Import your Firebase auth instance
+import { auth } from '../firebase/firebaseConfig.js'; // Import your Firebase auth instance
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

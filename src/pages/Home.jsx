@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getPopularMovies, searchMovies } from '../../src/services/movieApi'; // Corrected path
-import MovieList from '../../src/components/MovieList/MovieList'; // Corrected path
+import { getPopularMovies, searchMovies } from '../../src/services/movieApi.js'; // Corrected path
+import MovieList from '../../src/components/MovieList/MovieList.jsx'; // Corrected path
 import styles from './Home.module.css'; // Assuming you have a Home.module.css for styling
 
 const Home = () => {
