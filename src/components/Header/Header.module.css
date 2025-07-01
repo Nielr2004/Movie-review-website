@@ -1,0 +1,62 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--secondary-color);
+    padding: 0 20px;
+    height: var(--header-height);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navLeft {
+    display: flex;
+    align-items: center;
+}
+
+.logoLink {
+    display: flex;
+    align-items: center;
+    color: var(--text-light);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.navLogo {
+    height: 40px; /* Adjust size as needed */
+    margin-right: 10px;
+    border-radius: 50%; /* If your logo is circular */
+}
+
+.siteName {
+    margin-left: 5px;
+    font-size: 1.2em;
+    color: var(--text-light);
+}
+
+.navList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navList li {
+    margin-left: 25px;
+}
+
+.navItem {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navItem:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+}

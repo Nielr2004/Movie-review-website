@@ -1,0 +1,69 @@
+.homeContainer {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.searchBarContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 10px; /* Space between input and button */
+}
+
+.searchInput {
+  padding: 10px 15px;
+  width: 70%;
+  max-width: 500px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background-color: var(--secondary-color); /* Added for consistency */
+  color: var(--text-light); /* Added for consistency */
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--primary-color); /* Changed to your primary color */
+  box-shadow: 0 0 8px rgba(229, 9, 20, 0.4); /* Changed to your primary color */
+}
+
+.searchButton {
+  padding: 10px 20px;
+  background-color: var(--primary-color); /* Changed to your primary color */
+  color: var(--text-light); /* Changed for consistency */
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold; /* Added for consistency */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.searchButton:hover:not(:disabled) {
+  background-color: #f40612; /* Slightly darker red for hover */
+  transform: translateY(-1px);
+}
+
+.searchButton:disabled {
+  background-color: #666; /* Disabled color */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--text-light); /* Changed for consistency */
+  font-size: 2em;
+}
+
+.loadingMessage,
+.noResults {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2em;
+  color: var(--text-dark); /* Changed for consistency */
+}
