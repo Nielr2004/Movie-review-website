@@ -1,52 +1,93 @@
-// my-movie-app/src/services/movieApi.js
-const BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY; // Accessing the environment variable
+// my-movie-app/src/pages/MovieDetails.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+// --- CHANGE THIS LINE ---
+import { fetchMovieDetails } from '../services/movieApi.js'; // Ensure correct function name and path
+// --- END CHANGE ---
+import styles from './MovieDetails.module.css'; // Assuming you have this CSS module
 
-// Function to fetch popular movies
-export const fetchPopularMovies = async () => {
-  if (!API_KEY) {
-    console.error("TMDb API Key is missing. Please set VITE_TMDB_API_KEY in your .env.local file.");
-    throw new Error("TMDb API Key not configured.");
+const MovieDetails = () => {
+  const { id } = useParams();
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getMovie = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchMovieDetails(id); // Use fetchMovieDetails here too
+        setMovie(data);
+      } catch (err) {
+        setError("Failed to fetch movie details. Please try again later.");
+        console.error("Error fetching movie details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      getMovie();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div className={styles.container}>Loading movie details...</div>;
   }
-  const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
-  if (!response.ok) {
-    // Attempt to read error message from API if available
-    const errorData = await response.json().catch(() => ({}));
-    console.error("Error fetching popular movies:", response.status, errorData);
-    throw new Error(`HTTP error! status: ${response.status} - ${errorData.status_message || 'Unknown error'}`);
+
+  if (error) {
+    return <div className={styles.container} style={{ color: 'red' }}>{error}</div>;
   }
-  const data = await response.json();
-  return data.results;
+
+  if (!movie) {
+    return <div className={styles.container}>Movie not found.</div>;
+  }
+
+  // Format release date if available
+  const releaseDate = movie.release_date ? new Date(movie.release_date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) : 'N/A';
+
+  // Construct backdrop URL
+  const backdropUrl = movie.backdrop_path 
+    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+    : 'https://via.placeholder.com/1280x720?text=No+Image+Available';
+
+  return (
+    <div className={styles.movieDetailsContainer}>
+      <div className={styles.backdrop} style={{ backgroundImage: `url(${backdropUrl})` }}></div>
+      <div className={styles.content}>
+        <div className={styles.posterWrapper}>
+          {movie.poster_path ? (
+            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} className={styles.poster} />
+          ) : (
+            <div className={styles.noPoster}>No Poster Available</div>
+          )}
+        </div>
+        <div className={styles.info}>
+          <h1 className={styles.title}>{movie.title}</h1>
+          {movie.tagline && <p className={styles.tagline}>"{movie.tagline}"</p>}
+          <p className={styles.overview}>{movie.overview}</p>
+          <div className={styles.detailsGrid}>
+            <p><strong>Release Date:</strong> {releaseDate}</p>
+            <p><strong>Rating:</strong> {movie.vote_average ? `${movie.vote_average.toFixed(1)}/10 (${movie.vote_count} votes)` : 'N/A'}</p>
+            <p><strong>Runtime:</strong> {movie.runtime ? `${movie.runtime} minutes` : 'N/A'}</p>
+            <p><strong>Genres:</strong> {movie.genres && movie.genres.length > 0 ? movie.genres.map(g => g.name).join(', ') : 'N/A'}</p>
+            <p><strong>Budget:</strong> {movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A'}</p>
+            <p><strong>Revenue:</strong> {movie.revenue ? `$${movie.revenue.toLocaleString()}` : 'N/A'}</p>
+          </div>
+          {movie.homepage && (
+            <p className={styles.homepageLink}>
+              <a href={movie.homepage} target="_blank" rel="noopener noreferrer">Visit Homepage</a>
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
-// Function to search movies
-export const searchMovies = async (query) => {
-  if (!API_KEY) {
-    console.error("TMDb API Key is missing. Please set VITE_TMDB_API_KEY in your .env.local file.");
-    throw new Error("TMDb API Key not configured.");
-  }
-  if (!query) return []; // Return empty array if query is empty
-  const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error("Error searching movies:", response.status, errorData);
-    throw new Error(`HTTP error! status: ${response.status} - ${errorData.status_message || 'Unknown error'}`);
-  }
-  const data = await response.json();
-  return data.results;
-};
-
-// Function to fetch movie details by ID
-export const fetchMovieDetails = async (id) => {
-  if (!API_KEY) {
-    console.error("TMDb API Key is missing. Please set VITE_TMDB_API_KEY in your .env.local file.");
-    throw new Error("TMDb API Key not configured.");
-  }
-  const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`);
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error(`Error fetching movie details for ID ${id}:`, response.status, errorData);
-    throw new Error(`HTTP error! status: ${response.status} - ${errorData.status_message || 'Unknown error'}`);
-  }
-  return response.json();
-};
+export default MovieDetails;
