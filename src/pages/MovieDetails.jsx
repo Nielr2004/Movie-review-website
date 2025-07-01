@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getMovieDetails } from '../services/movieApi.js';
+import { fetchMovieDetails } from '../services/movieApi.js';
 import Spinner from '../components/UI/Spinner.jsx';
 import './MovieDetails.css';
 
