@@ -9,7 +9,8 @@ const fetchTmdb = async (path, params = {}) => {
 
   url.searchParams.append('api_key', API_KEY);
   for (const key in params) {
-    if (params[key] !== undefined && params[key] !== null && params[key] !== '') { // Only append if param has a value
+    // Only append if param has a value and is not null/undefined/empty string
+    if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
       url.searchParams.append(key, params[key]);
     }
   }
@@ -75,29 +76,28 @@ export const getSeriesGenres = async () => {
   return data.genres; // TMDB returns { genres: [...] }
 };
 
-// NEW: Discover Movies (now includes original language filter)
-export const discoverMovies = async (filters = {}, page = 1) => {
+// NEW: Discover Movies (now correctly handles 'page' from filters object)
+export const discoverMovies = async (filters = {}) => { // Removed 'page = 1' from signature
   const params = {
-    page: page,
+    page: filters.page, // Use page directly from filters
     with_genres: filters.genreId,
     'primary_release_year': filters.year,
     'vote_average.gte': filters.minRating,
     sort_by: filters.sortBy || 'popularity.desc',
-    with_original_language: filters.with_original_language // ADDED THIS LINE
+    with_original_language: filters.with_original_language
   };
   return fetchTmdb(`/discover/movie`, params);
 };
 
-// NEW: Discover TV Series (now includes original language filter)
-export const discoverSeries = async (filters = {}, page = 1) => {
+// NEW: Discover TV Series (now correctly handles 'page' from filters object and fixed duplicate 'page' key)
+export const discoverSeries = async (filters = {}) => { // Removed 'page = 1' from signature
   const params = {
-    page: page,
-    page: page,
+    page: filters.page, // Use page directly from filters
     with_genres: filters.genreId,
     'first_air_date_year': filters.year,
     'vote_average.gte': filters.minRating,
     sort_by: filters.sortBy || 'popularity.desc',
-    with_original_language: filters.with_original_language // ADDED THIS LINE
+    with_original_language: filters.with_original_language
   };
   return fetchTmdb(`/discover/tv`, params);
 };

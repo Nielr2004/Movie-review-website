@@ -15,7 +15,7 @@ import styles from './Home.module.css';
 const Home = () => {
   // General states for the current primary content display (Movies/Series pages or Search Results)
   const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Initialize to true as content will load on mount
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -66,11 +66,12 @@ const Home = () => {
   };
 
   // --- Main Content Fetching Logic (Refactored to use discover API) ---
+  // This function is for /movies and /series pages, and for search results
   const fetchPrimaryContent = useCallback(async (currentPage = 1) => {
-    // Only proceed if not already loading and there's potentially more content
-    if (loading && currentPage > 1) return; // Prevent concurrent loads during infinite scroll
-    if (!hasMore && currentPage > 1) return; // Stop if no more content
-    if (searching) return; // Do not fetch primary content if actively searching via input
+    // Prevent fetching if already loading or no more content, unless it's a new search/filter (page 1)
+    if (loading && currentPage > 1) return;
+    if (!hasMore && currentPage > 1 && searchTerm.trim() === '') return; // Only stop if no more content for filtered lists
+    if (searching) return;
 
     setLoading(true);
     setError(null);
@@ -87,9 +88,8 @@ const Home = () => {
     try {
       if (searchTerm.trim() !== '') {
         // If search term is active, prioritize search over filters/discover
-        // Search results are not paginated in this current implementation's API calls
         // For a true "load more" on search, searchMovies/searchSeries would need a 'page' parameter too.
-        // For now, search results will replace current content.
+        // For now, search results will replace current content and not paginate.
         if (currentPage === 1) { // Only re-fetch if it's the first page of a new search
           setSearching(true);
           if (contentType === 'tv') {
@@ -136,7 +136,8 @@ const Home = () => {
 
   // --- Effect to fetch data based on current page (Home, Movies, Series) ---
   useEffect(() => {
-    // Reset general search/filter states when navigating between pages or changing filters
+    // Reset general search/filter states when navigating between pages
+    // This ensures a clean state when switching routes
     setSearchTerm('');
     setSearchResults([]);
     setSuggestions([]);
@@ -147,10 +148,10 @@ const Home = () => {
     setSortBy('popularity.desc');
     setPage(1); // Reset page for new content fetch
     setHasMore(true); // Assume more content when starting a new fetch
+    setError(null); // Clear previous errors
+    setLoading(true); // Set loading true for the new page content
 
     const fetchHomePageSections = async () => {
-      setLoading(true);
-      setError(null);
       try {
         // Fetch Popular Movies for Home
         const movieData = await discoverMovies({ sortBy: 'popularity.desc' });
@@ -234,11 +235,20 @@ const Home = () => {
       setKoreanSeries([]);
       setTeluguSeries([]);
     }
-  }, [isHomePage, contentType, fetchPrimaryContent]); // Added fetchPrimaryContent as dependency
+    // Dependency array: Re-run when route changes or content type changes
+  }, [isHomePage, contentType, fetchPrimaryContent]);
 
   // --- Effect for Infinite Scroll (Intersection Observer) ---
   useEffect(() => {
-    if (isHomePage || searchTerm.trim() !== '') return; // Don't run infinite scroll on home page or during search results
+    // Only run infinite scroll on /movies or /series pages, and not during an active search
+    if (isHomePage || searchTerm.trim() !== '') {
+      // If we're on the home page or actively searching, unobserve the loader
+      if (loader.current) {
+        const currentObserver = new IntersectionObserver(() => {}); // Dummy observer
+        currentObserver.unobserve(loader.current);
+      }
+      return;
+    }
 
     const options = {
       root: null, // relative to the viewport
@@ -248,6 +258,7 @@ const Home = () => {
 
     const observer = new IntersectionObserver((entries) => {
       const target = entries[0];
+      // Trigger fetch if loader is intersecting, not currently loading, and there's more content
       if (target.isIntersecting && !loading && hasMore) {
         setPage((prevPage) => prevPage + 1); // Increment page to fetch next
       }
@@ -262,11 +273,13 @@ const Home = () => {
         observer.unobserve(loader.current);
       }
     };
-  }, [loading, hasMore, isHomePage, searchTerm]); // Dependencies for observer effect
+    // Dependencies: Re-run if loading state, hasMore flag, or page type changes
+  }, [loading, hasMore, isHomePage, searchTerm]);
 
   // Effect to fetch more primary content when page state changes
   useEffect(() => {
-    if (page > 1 && !isHomePage && searchTerm.trim() === '') { // Only fetch if page incremented and not on home/search
+    // Only fetch if page has incremented beyond 1, and we are not on the home page, and not actively searching
+    if (page > 1 && !isHomePage && searchTerm.trim() === '') {
       fetchPrimaryContent(page);
     }
   }, [page, isHomePage, searchTerm, fetchPrimaryContent]);
@@ -389,10 +402,6 @@ const Home = () => {
     return <div className={styles.loadingMessage}>Loading {contentType === 'movie' ? 'movies' : 'TV series'}...</div>;
   }
 
-  if (error && page === 1 && displayContent.length === 0 && !isHomePage) {
-    return <div className={styles.error}>{error}</div>;
-  }
-
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 20 }, (_, i) => currentYear - i); // Generate years like 2024, 2023, ..., 2005
 
@@ -402,7 +411,7 @@ const Home = () => {
   const shouldShowClearButton = areFiltersActive && (isMoviesPage || isSeriesPage); // Clear button only if filters are applied on movies/series pages
 
   // Determine which content to show in the primary display area
-  const showPrimaryContentGrid = !isHomePage && (loading || displayContent.length > 0 || error);
+  const showPrimaryContentGrid = !isHomePage && (loading || displayContent.length > 0 || error || searchTerm.trim() !== '');
 
   return (
     <div className={styles.homeContainer}>
@@ -519,7 +528,9 @@ const Home = () => {
       {showPrimaryContentGrid && (
         <>
           <h2 className={styles.sectionTitle}>{displayTitle}</h2>
-          {searching && searchTerm.trim() !== '' && searchResults.length === 0 ? (
+          {error && displayContent.length === 0 ? (
+            <div className={styles.error}>{error}</div>
+          ) : searching && searchTerm.trim() !== '' && searchResults.length === 0 ? (
             <div className={styles.loadingMessage}>Searching...</div>
           ) : displayContent.length > 0 ? (
             <MovieList movies={displayContent} contentType={contentType} />
@@ -547,9 +558,9 @@ const Home = () => {
       {/* NEW: Home Page Specific Sections - Conditionally rendered only on '/' */}
       {isHomePage && searchTerm.trim() === '' && (
         <div className={styles.homePageSections}>
-          {loading ? (
+          {loading ? ( // Check loading specific to home page sections
             <div className={styles.loadingMessage}>Loading home page recommendations...</div>
-          ) : error ? (
+          ) : error ? ( // Check error specific to home page sections
             <div className={styles.error}>{error}</div>
           ) : (
             <>

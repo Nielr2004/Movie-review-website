@@ -5,6 +5,8 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import Header from './components/Header/Header.jsx';
 import Footer from './components/Footer/Footer.jsx'; // Ensure Footer is imported if used
 
+import ErrorBoundary from './ErrorBoundary.jsx';
+
 // Lazy load page components for better performance
 const Home = lazy(() => import('./pages/Home.jsx'));
 // Correctly import the new DetailPage component from its new path
@@ -20,6 +22,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Header />
+        <ErrorBoundary>
         <main style={{ paddingTop: 'var(--header-height)', minHeight: 'calc(100vh - var(--header-height))', display: 'flex', flexDirection: 'column' }}>
           <Suspense fallback={<div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>}>
             <Routes>
@@ -36,6 +39,7 @@ function App() {
             </Routes>
           </Suspense>
         </main>
+        </ErrorBoundary>
         <Footer />
       </AuthProvider>
     </Router>
