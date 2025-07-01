@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import NotFound from './pages/NotFound';
+import Footer from './components/Footer/Footer.jsx'; // <--- NEW: Import the Footer component
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="*" element={<NotFound />} /> {/* Catch-all for 404 */}
           </Routes>
         </main>
+        <Footer /> {/* <--- NEW: Render the Footer component here */}
       </AuthProvider>
     </Router>
   );
