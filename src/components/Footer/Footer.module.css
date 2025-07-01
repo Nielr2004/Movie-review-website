@@ -1,0 +1,45 @@
+/* Styling for the main footer container */
+.footer {
+  background-color: var(--secondary-color); /* Use your defined secondary color for background */
+  color: var(--text-dark); /* Use a lighter text color for contrast */
+  padding: 20px 0; /* Vertical padding */
+  text-align: center; /* Center align text */
+  margin-top: 50px; /* Adds some space between content and footer */
+  width: 100%; /* Ensure it spans full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Container for the content inside the footer for layout */
+.footer-content {
+  max-width: 1200px; /* Max width to keep content readable */
+  margin: 0 auto; /* Center the content */
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 15px; /* Space between the text lines and logo */
+}
+
+/* Styling for the TMDb attribution text */
+.attribution-text {
+  font-size: 0.9em; /* Slightly smaller font size */
+  margin: 0; /* Remove default margins */
+}
+
+/* Styling for the TMDb logo image */
+.tmdb-logo {
+  height: 30px; /* Adjust the height of the logo as needed */
+  width: auto; /* Maintain aspect ratio */
+  opacity: 0.8; /* Make it slightly less prominent as per TMDb guidelines */
+  transition: opacity 0.3s ease; /* Smooth transition on hover */
+}
+
+.tmdb-logo:hover {
+  opacity: 1; /* Full opacity on hover for interaction */
+}
+
+/* Styling for your website's copyright text */
+.copyright-text {
+  font-size: 0.8em; /* Even smaller font size for copyright */
+  margin: 0; /* Remove default margins */
+  color: var(--text-darker); /* A slightly darker text for copyright if you have one */
+}
